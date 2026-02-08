@@ -103,6 +103,7 @@ info: Refinery.RefinementWorker.Worker[0]
 info: Refinery.RefinementWorker.Worker[0]
       [KAYIT BAŞARILI] Ticket ID: a1b2c3d4-e5f6-7890-1234-567890abcdef DB'ye yazıldı.
 ```
+<img width="1176" height="782" alt="image" src="https://github.com/user-attachments/assets/8fe428ec-e1fd-40ff-8358-3e4ca2964667" />
 
 ## Yol Haritası (Roadmap)
 
