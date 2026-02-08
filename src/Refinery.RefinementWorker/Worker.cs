@@ -1,5 +1,6 @@
 using Refinery.Core.Abstractions;
 using Refinery.Core.Entities;
+using Refinery.Infrastructure.Data;
 
 namespace Refinery.RefinementWorker
 {
@@ -8,17 +9,22 @@ namespace Refinery.RefinementWorker
         private readonly ILogger<Worker> logger;
         private readonly IRedisStreamService redisStreamService;
         private readonly IAiRefineryService aiRefineryService;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
         private const string StreamKey = "ticket_emails";
         private const string ConsumerGroup = "ai_processors";
         private const string ConsumerName = "worker_1";
 
 
-        public Worker(ILogger<Worker> logger, IRedisStreamService redisStreamService, IAiRefineryService aiRefineryService)
+        public Worker(ILogger<Worker> logger,
+            IRedisStreamService redisStreamService,
+            IAiRefineryService aiRefineryService,
+            IServiceScopeFactory serviceScopeFactory)
         {
             this.logger = logger;
             this.redisStreamService = redisStreamService;
             this.aiRefineryService = aiRefineryService;
+            this.serviceScopeFactory = serviceScopeFactory;
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
@@ -47,17 +53,37 @@ namespace Refinery.RefinementWorker
             {
                 var analysis = await aiRefineryService.RefineMailAsync(mailData);
 
-                logger.LogInformation("------------------------------------------------");
-                logger.LogInformation($"[AI ANALÝZÝ TAMAMLANDI]");
-                logger.LogInformation($"Kategori : {analysis.Category}");
-                logger.LogInformation($"Aciliyet : {analysis.Urgency}");
-                logger.LogInformation($"Özet     : {analysis.Summary}");
-                logger.LogInformation($"Eksik Bilgi: {analysis.MissingInfo} ({analysis.MissingInfoDetails})");
-                logger.LogInformation("------------------------------------------------");
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<RefineryDbContext>();
+
+                    var ticket = new Ticket
+                    {
+                        Sender = mailData.Sender,
+                        Subject = mailData.Subject,
+                        Body = mailData.Body,
+                        Category = analysis.Category,
+                        Urgency = analysis.Urgency,
+                        Summary = analysis.Summary,
+                        MissingInfo = analysis.MissingInfo,
+                        MissingInfoDetails = analysis.MissingInfoDetails,
+                        CreatedAt = DateTime.UtcNow,
+                        AiSentiment = analysis.Sentiment,
+                        Status = "New"
+                    };
+
+                    dbContext.Tickets.Add(ticket);
+                    await dbContext.SaveChangesAsync();
+
+                    logger.LogInformation("------------------------------------------------");
+                    logger.LogInformation($"[KAYIT BAÞARILI] Ticket ID: {ticket.Id}");
+                    logger.LogInformation($"Kategori: {ticket.Category} | Aciliyet: {ticket.Urgency}");
+                    logger.LogInformation("------------------------------------------------");
+                }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "AI Ýþlemi sýrasýnda hata oluþtu!");
+                logger.LogError(ex, "ProcessMessage Ýþlemi sýrasýnda hata oluþtu!");
                 throw;
             }
 
