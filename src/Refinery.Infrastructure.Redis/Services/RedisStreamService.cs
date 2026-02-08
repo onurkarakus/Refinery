@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Refinery.Core.Abstractions;
 using Refinery.Core.Entities;
-using Refinery.Infrastructure.Redis.Abstractions;
 using Refinery.Infrastructure.Redis.Options;
 using StackExchange.Redis;
 

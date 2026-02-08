@@ -1,7 +1,6 @@
 ﻿using Refinery.Core.Entities;
 
-namespace Refinery.Infrastructure.Redis.Abstractions;
-
+namespace Refinery.Core.Abstractions;
 public interface IRedisStreamService
 {
     Task PublishMailAsync(string streamKey, MailData mailData);

@@ -1,7 +1,21 @@
+using Refinery.Core.Abstractions;
+using Refinery.Infrastructure.Redis.Options;
+using Refinery.Infrastructure.Redis.Services;
 using Refinery.IngestWorker;
 
-var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<Worker>();
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        var builder = Host.CreateApplicationBuilder(args);
 
-var host = builder.Build();
-host.Run();
+        builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
+
+        builder.Services.AddSingleton<IRedisStreamService, RedisStreamService>();
+
+        builder.Services.AddHostedService<Worker>();
+
+        var host = builder.Build();
+        host.Run();
+    }
+}

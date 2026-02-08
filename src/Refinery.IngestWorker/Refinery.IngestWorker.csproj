@@ -10,4 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Refinery.Infrastructure.Redis\Refinery.Infrastructure.Redis.csproj" />
+  </ItemGroup>
 </Project>
