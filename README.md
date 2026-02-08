@@ -81,6 +81,30 @@ Redis CLI ile manuel bir e-posta ekleyip Worker çıktısını izleyin:
 XADD ticket_emails * Subject "Login Sorunu" Body "Sisteme giriş yapamıyorum, hata kodu 500 alıyorum. Acil yardım. Kullanıcı: ahmet" Sender "ahmet@test.com" Recipient "support@refinery.com"
 ```
 
+5) Worker Konsolunda Göreceğiniz Çıktı:
+
+```bash
+info: Refinery.RefinementWorker.Worker[0]
+      [MAIL ALINDI] Gönderen: ahmet@test.com | Konu: Login Sorunu
+info: Refinery.RefinementWorker.Worker[0]
+      ------------------------------------------------
+info: Refinery.RefinementWorker.Worker[0]
+      [AI ANALİZİ TAMAMLANDI]
+info: Refinery.RefinementWorker.Worker[0]
+      Kategori : Technical
+info: Refinery.RefinementWorker.Worker[0]
+      Aciliyet : High
+info: Refinery.RefinementWorker.Worker[0]
+      Özet     : Kullanıcı 500 hatası nedeniyle sisteme giriş yapamıyor.
+info: Refinery.RefinementWorker.Worker[0]
+      Eksik Bilgi: True (Telefon numarası eksik)
+info: Refinery.RefinementWorker.Worker[0]
+      ------------------------------------------------
+info: Refinery.RefinementWorker.Worker[0]
+      [KAYIT BAŞARILI] Ticket ID: a1b2c3d4-e5f6-7890-1234-567890abcdef DB'ye yazıldı.
+```
+<img width="1176" height="782" alt="image" src="https://github.com/user-attachments/assets/8fe428ec-e1fd-40ff-8358-3e4ca2964667" />
+
 ## Yol Haritası (Roadmap)
 
 - [x] Solution ve Katmanlı Mimari Kurulumu
