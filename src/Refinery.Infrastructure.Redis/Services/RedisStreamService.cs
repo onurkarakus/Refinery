@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Refinery.Core.Entities;
 using Refinery.Infrastructure.Redis.Abstractions;
 using Refinery.Infrastructure.Redis.Options;
@@ -11,11 +12,11 @@ public class RedisStreamService : IRedisStreamService
     private readonly ConnectionMultiplexer redis;
     private readonly IDatabase database;
     private readonly IOptions<RedisOptions> options;
-    private readonly CancellationTokenSource cancellationTokenSource;
-    private readonly CancellationToken cancellationToken;
+    private readonly ILogger<RedisStreamService> logger;
 
-    public RedisStreamService(IOptions<RedisOptions> options)
+    public RedisStreamService(IOptions<RedisOptions> options, ILogger<RedisStreamService> logger)
     {
+        this.logger = logger;
         this.options = options;
         this.redis = ConnectionMultiplexer.Connect(new ConfigurationOptions
         {
@@ -25,19 +26,34 @@ public class RedisStreamService : IRedisStreamService
         });
 
         this.database = redis.GetDatabase();
-
-        cancellationTokenSource = new CancellationTokenSource();
-        cancellationToken = cancellationTokenSource.Token;
     }
 
     public async Task ConsumeStreamAsync(string streamKey, string consumerGroup, string consumerName, Func<MailData, Task> processHandler, CancellationToken cancellationToken = default)
     {
-        var result = await database.StreamReadGroupAsync(streamKey, consumerGroup, consumerName, ">", count: 10);
+        var results = await database.StreamReadGroupAsync(streamKey, consumerGroup, consumerName, ">", count: 1);
         
-        var mailData = result.Select(MapToMailData);
+        if (results.Any())
+        {
+            var entry = results.First();
+            var mailData = MapToMailData(entry);
 
-        await processHandler(mailData.FirstOrDefault()!);
-        await database.StreamAcknowledgeAsync(streamKey, consumerGroup, result.FirstOrDefault().Id);
+            try
+            {
+                await processHandler(mailData);
+
+                await database.StreamAcknowledgeAsync(streamKey, consumerGroup, entry.Id);
+            }
+            catch (Exception)
+            {
+                logger.LogError("Error processing stream entry with ID {EntryId} in stream {StreamKey} for consumer group {ConsumerGroup} and consumer {ConsumerName}", 
+                    entry.Id, 
+                    streamKey, 
+                    consumerGroup, 
+                    consumerName);
+
+                throw;
+            }
+        }        
     }
 
     public async Task CreateGroupAsync(string streamKey, string consumerGroup)
