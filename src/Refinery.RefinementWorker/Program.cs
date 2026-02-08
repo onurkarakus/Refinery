@@ -1,14 +1,24 @@
-using Refinery.Infrastructure.Redis.Abstractions;
+using Refinery.Core.Abstractions;
 using Refinery.Infrastructure.Redis.Options;
 using Refinery.Infrastructure.Redis.Services;
 using Refinery.RefinementWorker;
 
-var builder = Host.CreateApplicationBuilder(args);
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
-builder.Services.AddSingleton<IRedisStreamService, RedisStreamService>();
+        builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
+        builder.Services.AddSingleton<IRedisStreamService, RedisStreamService>();
 
-builder.Services.AddHostedService<Worker>();
+        var geminiSettings = builder.Configuration.GetSection("Gemini");
+        string apiKey = geminiSettings["ApiKey"] ?? throw new Exception("Gemini ApiKey bulunamadý!");
+        string modelId = geminiSettings["ModelId"] ?? "gemini-1.5-flash";
 
-var host = builder.Build();
-host.Run();
+        builder.Services.AddHostedService<Worker>();
+
+        var host = builder.Build();
+        host.Run();
+    }
+}

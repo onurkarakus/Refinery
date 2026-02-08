@@ -10,8 +10,11 @@ internal class Program
         var builder = Host.CreateApplicationBuilder(args);
 
         builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
-
         builder.Services.AddSingleton<IRedisStreamService, RedisStreamService>();
+
+        var geminiSettings = builder.Configuration.GetSection("Gemini");
+        string apiKey = geminiSettings["ApiKey"] ?? throw new Exception("Gemini ApiKey bulunamadý!");
+        string modelId = geminiSettings["ModelId"] ?? "gemini-1.5-flash";
 
         builder.Services.AddHostedService<Worker>();
 

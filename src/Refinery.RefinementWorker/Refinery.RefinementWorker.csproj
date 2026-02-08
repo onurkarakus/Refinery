@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Refinery.Infrastructure.Ai\Refinery.Infrastructure.Ai.csproj" />
     <ProjectReference Include="..\Refinery.Infrastructure.Redis\Refinery.Infrastructure.Redis.csproj" />
   </ItemGroup>
 </Project>
