@@ -2,7 +2,6 @@
 using Microsoft.SemanticKernel.ChatCompletion;
 using Refinery.Core.Abstractions;
 using Refinery.Core.Entities;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace Refinery.Infrastructure.Ai;
@@ -11,11 +10,11 @@ public class AiRefineryGeminiService : IAiRefineryService
 {
     private readonly Kernel kernel;
     private readonly IChatCompletionService chatCompletionService;
-    
+
     public AiRefineryGeminiService(string apiKey, string modelId)
     {
         var builder = Kernel.CreateBuilder();
-        builder.AddGoogleAIGeminiChatCompletion(modelId,apiKey);
+        builder.AddGoogleAIGeminiChatCompletion(modelId, apiKey);
 
         kernel = builder.Build();
         chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();

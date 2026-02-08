@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Options;
 using Refinery.Core.Abstractions;
 using Refinery.Core.Entities;
-using Refinery.Infrastructure.Redis.Options;
+using Refinery.Core.Options;
 using StackExchange.Redis;
 
-namespace Refinery.Infrastructure.Redis.Services;
+namespace Refinery.Infrastructure.Redis;
 
 public class RedisStreamService : IRedisStreamService
 {
@@ -31,7 +31,7 @@ public class RedisStreamService : IRedisStreamService
     public async Task ConsumeStreamAsync(string streamKey, string consumerGroup, string consumerName, Func<MailData, Task> processHandler, CancellationToken cancellationToken = default)
     {
         var results = await database.StreamReadGroupAsync(streamKey, consumerGroup, consumerName, ">", count: 1);
-        
+
         if (results.Any())
         {
             var entry = results.First();
@@ -45,15 +45,15 @@ public class RedisStreamService : IRedisStreamService
             }
             catch (Exception)
             {
-                logger.LogError("Error processing stream entry with ID {EntryId} in stream {StreamKey} for consumer group {ConsumerGroup} and consumer {ConsumerName}", 
-                    entry.Id, 
-                    streamKey, 
-                    consumerGroup, 
+                logger.LogError("Error processing stream entry with ID {EntryId} in stream {StreamKey} for consumer group {ConsumerGroup} and consumer {ConsumerName}",
+                    entry.Id,
+                    streamKey,
+                    consumerGroup,
                     consumerName);
 
                 throw;
             }
-        }        
+        }
     }
 
     public async Task CreateGroupAsync(string streamKey, string consumerGroup)

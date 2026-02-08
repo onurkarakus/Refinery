@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Refinery.Infrastructure.Ai\Refinery.Infrastructure.Ai.csproj" />
-    <ProjectReference Include="..\Refinery.Infrastructure.Redis\Refinery.Infrastructure.Redis.csproj" />
+    <ProjectReference Include="..\Refinery.Infrastructure\Refinery.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

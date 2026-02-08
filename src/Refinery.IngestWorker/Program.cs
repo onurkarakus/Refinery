@@ -1,7 +1,7 @@
 using Refinery.Core.Abstractions;
+using Refinery.Core.Options;
 using Refinery.Infrastructure.Ai;
-using Refinery.Infrastructure.Redis.Options;
-using Refinery.Infrastructure.Redis.Services;
+using Refinery.Infrastructure.Redis;
 using Refinery.IngestWorker;
 
 internal class Program

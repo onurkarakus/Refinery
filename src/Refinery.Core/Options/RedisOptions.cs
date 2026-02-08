@@ -1,4 +1,10 @@
-﻿namespace Refinery.Infrastructure.Redis.Options;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Refinery.Core.Options;
 
 public class RedisOptions
 {
