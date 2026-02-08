@@ -81,7 +81,7 @@ Redis CLI ile manuel bir e-posta ekleyip Worker çıktısını izleyin:
 XADD ticket_emails * Subject "Login Sorunu" Body "Sisteme giriş yapamıyorum, hata kodu 500 alıyorum. Acil yardım. Kullanıcı: ahmet" Sender "ahmet@test.com" Recipient "support@refinery.com"
 ```
 
-5 ) Worker Konsolunda Göreceğiniz Çıktı:
+5) Worker Konsolunda Göreceğiniz Çıktı:
 
 ```bash
 info: Refinery.RefinementWorker.Worker[0]
