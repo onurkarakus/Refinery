@@ -20,7 +20,7 @@ public class RedisStreamService : IRedisStreamService
         this.options = options;
         this.redis = ConnectionMultiplexer.Connect(new ConfigurationOptions
         {
-            EndPoints = { $"{options.Value.HostName}:{options.Value.Port},password={options.Value.Password}" },
+            EndPoints = { $"{options.Value.HostName}:{options.Value.Port}" },
             Password = options.Value.Password,
             Ssl = options.Value.Ssl,
         });
